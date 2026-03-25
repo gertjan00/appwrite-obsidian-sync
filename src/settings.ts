@@ -120,6 +120,8 @@ export class MyPluginSettingTab extends PluginSettingTab {
 	}
 
 	async connect(): Promise<boolean> {
+		await new Promise((resolve) => setTimeout(resolve, 5000));
+
 		return true;
 	}
 }
