@@ -69,7 +69,9 @@ export class AppwriteService {
 		}
 	}
 
-	async initialSync(): Promise<void> {}
+	async initialSync(): Promise<void> {
+		new Notice("Promise resolved");
+	}
 
 	async prepareDatabase(): Promise<void> {
 		try {

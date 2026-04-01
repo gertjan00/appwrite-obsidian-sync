@@ -1,6 +1,6 @@
 import { App, Notice, PluginSettingTab, Setting } from "obsidian";
 import MyPlugin from "./main";
-import { LoginModal } from "ui/LoginModal";
+import { FirstSyncModal } from "ui/FirstSyncModal";
 
 export interface MyPluginSettings {
 	appwriteEndpoint: string;
@@ -96,6 +96,22 @@ export class MyPluginSettingTab extends PluginSettingTab {
 					.setCta()
 					.onClick(async () => {
 						await this.plugin.appwrite.prepareDatabase();
+					});
+			});
+
+		new Setting(containerEl)
+			.setName("Run first sync")
+			.setDesc(
+				"Choose if you want to pull from, or push to the Server (merge not yet available)",
+			)
+			.addButton((button) => {
+				button
+					.setCta()
+					.setButtonText("Sync")
+					.onClick(async () => {
+						new FirstSyncModal(this.app, (lorem) => {
+							new Notice(lorem);
+						}).open();
 					});
 			});
 	}
