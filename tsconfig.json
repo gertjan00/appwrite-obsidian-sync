@@ -1,6 +1,8 @@
 {
 	"compilerOptions": {
+		"strict": true,
 		"baseUrl": "src",
+		"exactOptionalPropertyTypes": true,
 		"inlineSourceMap": true,
 		"inlineSources": true,
 		"module": "ESNext",
@@ -17,14 +19,7 @@
 		"strictBindCallApply": true,
 		"allowSyntheticDefaultImports": true,
 		"useUnknownInCatchVariables": true,
-		"lib": [
-			"DOM",
-			"ES5",
-			"ES6",
-			"ES7"
-		]
+		"lib": ["DOM", "ES5", "ES6", "ES7"]
 	},
-	"include": [
-		"src/**/*.ts"
-	]
+	"include": ["src/**/*.ts"]
 }

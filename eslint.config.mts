@@ -1,34 +1,43 @@
-import tseslint from 'typescript-eslint';
-import obsidianmd from "eslint-plugin-obsidianmd";
-import globals from "globals";
-import { globalIgnores } from "eslint/config";
+import js from "@eslint/js";
+import tseslint from "typescript-eslint";
 
 export default tseslint.config(
+	js.configs.recommended,
+	...tseslint.configs.recommendedTypeChecked,
+	...tseslint.configs.strictTypeChecked,
 	{
 		languageOptions: {
-			globals: {
-				...globals.browser,
-			},
 			parserOptions: {
-				projectService: {
-					allowDefaultProject: [
-						'eslint.config.js',
-						'manifest.json'
-					]
-				},
+				project: true,
 				tsconfigRootDir: import.meta.dirname,
-				extraFileExtensions: ['.json']
 			},
 		},
+		rules: {
+			"@typescript-eslint/explicit-function-return-type": "error",
+			"@typescript-eslint/explicit-module-boundary-types": "error",
+			"@typescript-eslint/explicit-member-accessibility": [
+				"error",
+				{ accessibility: "explicit" },
+			],
+
+			"@typescript-eslint/no-explicit-any": "error",
+			"@typescript-eslint/no-unsafe-assignment": "error",
+			"@typescript-eslint/no-unsafe-argument": "error",
+			"@typescript-eslint/no-unsafe-call": "error",
+			"@typescript-eslint/no-unsafe-member-access": "error",
+			"@typescript-eslint/no-unsafe-return": "error",
+
+			"@typescript-eslint/typedef": [
+				"error",
+				{
+					variableDeclaration: true,
+					parameter: true,
+					propertyDeclaration: true,
+					memberVariableDeclaration: true,
+				},
+			],
+
+			"@typescript-eslint/no-inferrable-types": "off",
+		},
 	},
-	...obsidianmd.configs.recommended,
-	globalIgnores([
-		"node_modules",
-		"dist",
-		"esbuild.config.mjs",
-		"eslint.config.js",
-		"version-bump.mjs",
-		"versions.json",
-		"main.js",
-	]),
 );

@@ -95,9 +95,7 @@ export class MyPluginSettingTab extends PluginSettingTab {
 				button
 					.setButtonText("Update")
 					.setCta()
-					.onClick(async () => {
-						await this.plugin.appwrite.prepareDatabase();
-					});
+					.onClick(async () => {});
 			});
 
 		new Setting(containerEl)
@@ -109,10 +107,11 @@ export class MyPluginSettingTab extends PluginSettingTab {
 				button
 					.setCta()
 					.setButtonText("Sync")
-					.onClick(async () => {
-						new FirstSyncModal(this.app, (resultaat) => {
-							new Notice(resultaat);
-						}).open();
+					.onClick(() => {
+						new FirstSyncModal(
+							this.app,
+							async (resultaat) => {},
+						).open();
 					});
 			});
 	}

@@ -1,4 +1,5 @@
-import { requestUrl, RequestUrlParam, Notice } from "obsidian";
+import { Models } from "node-appwrite";
+import { requestUrl, Notice } from "obsidian";
 import { MyPluginSettings } from "settings";
 import { AppwriteAPI } from "types/appwrite-api";
 
@@ -9,14 +10,11 @@ export class AppwriteService {
 		this.settings = settings;
 	}
 
-	private async adminRequest<
-		P extends keyof AppwriteAPI,
-		M extends keyof AppwriteAPI[P] & string,
-	>(
-		path: P,
-		method: M,
-		body?: AppwriteAPI[P][M] extends { body: infer B } ? B : undefined,
-	): Promise<AppwriteAPI[P][M] extends { response: infer R } ? R : any> {
+	private async adminRequest<Banaan>(
+		path: string,
+		method: string,
+		body?: Banaan,
+	): Promise<Banaan> {
 		try {
 			const res = await requestUrl({
 				url: `${this.settings.appwriteEndpoint}${path}`,
@@ -29,21 +27,9 @@ export class AppwriteService {
 				body: body ? JSON.stringify(body) : undefined,
 			});
 
-			return res.json;
+			return res.json as Banaan;
 		} catch (e) {
-			let msg;
-
-			if (e instanceof Error) {
-				msg = e.message;
-			} else if (e) {
-				msg = e.toString();
-			} else {
-				msg = "Onbekende fout";
-			}
-
-			throw new Error(
-				`Appwrite adminRequest error op ${method} - ${path}: ${msg}`,
-			);
+			throw e;
 		}
 	}
 
@@ -54,7 +40,13 @@ export class AppwriteService {
 		}
 
 		try {
-			const data = await this.adminRequest("/databases", "GET");
+		} catch {}
+
+		try {
+			const data = await this.adminRequest<Models.DatabaseList>(
+				"/databases",
+				"GET",
+			);
 
 			if (data.databases) {
 				new Notice(
@@ -69,19 +61,9 @@ export class AppwriteService {
 		}
 	}
 
-	async initialSync(): Promise<void> {
-		new Notice("Promise resolved");
-	}
+	async getDatabase(): Promise<Models.Collection> {
+		const db = await this.adminRequest();
 
-	async prepareDatabase(): Promise<void> {
-		try {
-			await this.adminRequest("/databases", "POST", {
-				databaseId: "test",
-				name: "test",
-			});
-			new Notice("Database 'test' aangemaakt.");
-		} catch (e) {
-			new Notice("Database aanmaken mislukt.");
-		}
+		return db.Collection;
 	}
 }
