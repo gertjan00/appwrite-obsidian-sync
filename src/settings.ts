@@ -60,6 +60,10 @@ export class MyPluginSettingTab extends PluginSettingTab {
 					});
 			});
 
+		// API key can be saved in data.json. Each user needs to setup their own private appwrite project.
+		// So environment will not be shared with others and apikey only accessible on client machine.
+		// If someone can access that then apikey is not biggest concern
+		// Maybe later: only store key in memory during initial setup.
 		new Setting(containerEl)
 			.setName("Appwrite API key")
 			.setDesc("Your server API key")
@@ -130,12 +134,12 @@ export class MyPluginSettingTab extends PluginSettingTab {
 							"This will really delete all data on your Appwrite server!!",
 							async () => {
 								const dbList =
-									await this.plugin.appwrite.listDatabases();
+									await this.plugin.appwrite.schema.listDatabases();
 
 								dbList.databases.forEach(async (db) => {
 									try {
 										console.log(`"${db.name}" verwijderen`);
-										await this.plugin.appwrite.deleteDatabase(
+										await this.plugin.appwrite.schema.deleteDatabase(
 											db.$id,
 										);
 									} catch (e: any) {

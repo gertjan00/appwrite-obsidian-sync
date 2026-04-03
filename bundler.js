@@ -89,7 +89,7 @@ function isProbablyTextFile(filePath) {
 		const clipboardyModule = await import("clipboardy");
 		await clipboardyModule.default.write(output);
 
-		console.log(`${allFiles.length} bestanden gebundeld`);
+		console.log(`\n  ${allFiles.length} bestanden gebundeld\n`);
 	} catch (error) {
 		console.error("Fout bij bundelen:", error);
 		process.exit(1);
