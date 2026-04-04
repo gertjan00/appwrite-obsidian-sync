@@ -23,7 +23,6 @@ export class ConfirmModal extends Modal {
 		this.onConfirm = props.onConfirm;
 		this.countdown = props.countdown ?? 0;
 		this.setWarning = props.setWarning ?? false;
-		console.log(props);
 	}
 
 	onOpen() {
