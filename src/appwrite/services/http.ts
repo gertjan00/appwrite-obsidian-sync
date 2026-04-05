@@ -14,8 +14,10 @@ export class AppwriteHttpService {
 		body?: unknown,
 	): Promise<TResponse> {
 		try {
+			const url = `${this.settings.appwriteEndpoint}${path}`;
+
 			const res = await requestUrl({
-				url: `${this.settings.appwriteEndpoint}${path}`,
+				url: url,
 				method: method,
 				headers: {
 					"Content-Type": "application/json",

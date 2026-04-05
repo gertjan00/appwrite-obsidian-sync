@@ -8,6 +8,7 @@ export interface MyPluginSettings {
 	appwriteProjectId: string;
 	appwriteApiKey: string;
 	connected: boolean;
+	initialSyncDone: boolean;
 }
 
 export const DEFAULT_SETTINGS: MyPluginSettings = {
@@ -15,6 +16,7 @@ export const DEFAULT_SETTINGS: MyPluginSettings = {
 	appwriteProjectId: "",
 	appwriteApiKey: "",
 	connected: false,
+	initialSyncDone: false,
 };
 
 export class MyPluginSettingTab extends PluginSettingTab {
@@ -133,21 +135,7 @@ export class MyPluginSettingTab extends PluginSettingTab {
 								"This will really delete all data on your Appwrite server!!",
 							countdown: 10,
 							setWarning: true,
-							onConfirm: async () => {
-								const dbList =
-									await this.plugin.appwrite.schema.listDatabases();
-
-								dbList.databases.forEach(async (db) => {
-									try {
-										console.log(`"${db.name}" verwijderen`);
-										await this.plugin.appwrite.schema.deleteDatabase(
-											db.$id,
-										);
-									} catch (e: any) {
-										if (e) console.error(e);
-									}
-								});
-							},
+							onConfirm: async () => {},
 						}).open();
 					});
 			});

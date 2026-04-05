@@ -1,10 +1,53 @@
 import { AppwriteHttpService } from "./http";
 import { Models } from "node-appwrite";
 
+import { template } from "types/schema-template";
+
 export class AppwriteSchemaService {
 	constructor(private readonly http: AppwriteHttpService) {}
 
-	async checkSchema(): Promise<void> {}
+	async updateSchema(): Promise<void> {
+		console.log("Updating schema");
+
+		for (const templateDb of template.databases) {
+			try {
+				console.log(" - creating database:", templateDb.id);
+				await this.createDatabase(templateDb.id, templateDb.name);
+			} catch (e: any) {
+				console.error(e);
+			}
+
+			for (const templateTable of templateDb.tables) {
+				try {
+					console.log("   - creating table:", templateTable.id);
+					await this.createTable(
+						templateDb.id,
+						templateTable.id,
+						templateTable.name,
+					);
+				} catch (e: any) {
+					console.error(e);
+				}
+
+				for (const templateColumn of templateTable.columns) {
+					try {
+						const url = `/tablesdb/${templateDb.id}/tables/${templateTable.id}/columns/${templateColumn.type}`;
+						const body: any = { ...templateColumn };
+						delete body.type;
+
+						console.log(
+							"     - creating column:",
+							templateColumn.key,
+						);
+						await this.http.request("POST", url, body);
+					} catch (e: any) {
+						console.error(e);
+					}
+				}
+			}
+		}
+		console.log("Updating schema finished");
+	}
 
 	async listTeams(): Promise<Models.TeamList> {
 		return await this.http.request("GET", `/teams`);
@@ -76,5 +119,20 @@ export class AppwriteSchemaService {
 
 	async deleteDatabase(databaseId: string): Promise<void> {
 		await this.http.request("DELETE", `/tablesdb/${databaseId}`);
+	}
+
+	// Deze functie alleen tijdens testen gebruiken
+	async resetAll() {
+		console.info("Start reset alles");
+		const dbList = await this.listDatabases();
+
+		dbList.databases.forEach(async (db) => {
+			try {
+				console.log(`"${db.name}" verwijderen`);
+				await this.deleteDatabase(db.$id);
+			} catch (e: any) {
+				if (e) console.error(e);
+			}
+		});
 	}
 }

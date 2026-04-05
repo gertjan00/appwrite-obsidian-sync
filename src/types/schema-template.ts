@@ -108,11 +108,11 @@ export const urlColumn = (params: Omit<UrlColumn, "type">): UrlColumn => ({
 	type: "url",
 });
 
-export const schema: TSchema = {
+export const template: TSchema = {
 	databases: [
 		{
-			id: "obsidian_sync",
-			name: "Obsidian Sync Vault",
+			id: "obsidian",
+			name: "Obsidian",
 			tables: [
 				{
 					id: "files",
@@ -182,12 +182,10 @@ export const schema: TSchema = {
 						integerColumn({
 							key: "cursor_line",
 							required: true,
-							default: 0,
 						}),
 						integerColumn({
 							key: "cursor_char",
 							required: true,
-							default: 0,
 						}),
 						dateTimeColumn({
 							key: "last_seen_at",
