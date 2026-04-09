@@ -1,15 +1,14 @@
 import { Models } from "node-appwrite";
-import { requestUrl } from "obsidian";
+import { requestUrl, SecretStorage } from "obsidian";
 import { MyPluginSettings } from "settings";
 import { template } from "types/schema-template";
 import { SyncLogger } from "types/sync-logger";
 
 export class AppwriteHttpService {
-	private settings: MyPluginSettings;
-
-	constructor(settings: MyPluginSettings) {
-		this.settings = settings;
-	}
+	constructor(
+		private settings: MyPluginSettings,
+		private secretStorage: SecretStorage,
+	) {}
 
 	request = async <TResponse>(
 		method: "GET" | "POST" | "DELETE",
@@ -25,7 +24,10 @@ export class AppwriteHttpService {
 				headers: {
 					"Content-Type": "application/json",
 					"X-Appwrite-Project": this.settings.appwriteProjectId,
-					"X-Appwrite-Key": this.settings.appwriteApiKey,
+					"X-Appwrite-Key":
+						this.secretStorage.getSecret(
+							this.settings.appwriteApiKey,
+						) || "",
 				},
 				body: body ? JSON.stringify(body) : undefined,
 			});
@@ -38,6 +40,15 @@ export class AppwriteHttpService {
 		} catch (e) {
 			throw e;
 		}
+	};
+
+	testApiKey = async (): Promise<boolean> => {
+		try {
+			await this.request("GET", "/health/queue/stats-usage");
+		} catch (e: any) {
+			return false;
+		}
+		return true;
 	};
 
 	createDatabase = async (

@@ -5,183 +5,161 @@ import {
 	Setting,
 	setIcon,
 	ButtonComponent,
+	Notice,
 } from "obsidian";
 import MyPlugin from "./main";
 import { FirstSyncModal } from "ui/FirstSyncModal";
 import { ConfirmModal } from "ui/ConfirmModal";
 
-export interface MyPluginSettings {
-	appwriteEndpoint: string;
-	appwriteProjectId: string;
-
-	appwriteApiKey: string;
-	connected: boolean;
-
-	initialSyncDone: boolean;
-}
-
-export interface Tab {
+interface Tab {
 	id: string;
 	title: string;
 	icon: string;
+	requiresApiKey: boolean;
 	render: (containerEl: HTMLElement) => void;
 }
 
+export interface MyPluginSettings {
+	appwriteEndpoint: string;
+	appwriteProjectId: string;
+	appwriteApiKey: string;
+	connected: boolean;
+	initialSyncDone: boolean;
+	syncPlugins: boolean;
+}
+
 export const DEFAULT_SETTINGS: MyPluginSettings = {
-	appwriteEndpoint: "https://<REGION>.cloud.appwrite.io/v1",
-	appwriteProjectId: "",
+	appwriteEndpoint: "https://appwrite.zalmhuys.com/v1", // "https://<REGION>.cloud.appwrite.io/v1",
+	appwriteProjectId: "69c315ee003c738bed8e", // ""
 	appwriteApiKey: "",
 	connected: false,
 	initialSyncDone: false,
+	syncPlugins: false,
 };
 
 export class MyPluginSettingTab extends PluginSettingTab {
 	plugin: MyPlugin;
-	activeTabId: string; // We houden bij welke tab open staat
+	private currentActiveTab: string;
 
 	constructor(app: App, plugin: MyPlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
-		this.activeTabId = "general"; // Default tab
+		this.currentActiveTab = "team";
 	}
 
 	display(): void {
-		const { containerEl } = this;
-
+		const containerEl = this.containerEl;
 		containerEl.empty();
 		containerEl.addClass("aos-settings-tab");
 
 		containerEl.createEl("h2", {
-			text: "Appwrite Obsidian Sync settings",
+			text: "Appwrite Obsidian Sync Settings",
 			attr: {
 				style: "padding-left: 0",
 			},
 		});
 
+		const headerEl = containerEl.createDiv({
+			cls: "tab-header",
+		});
+
 		const tabs = this.getTabs();
 
-		const headerEl = containerEl.createDiv({ cls: "tab-header" });
-
 		tabs.forEach((tab) => {
-			const isActive = this.activeTabId === tab.id;
+			const isActive = tab.id === this.currentActiveTab;
+
+			const isDisabled =
+				tab.requiresApiKey && !this.plugin.settings.appwriteApiKey;
 
 			const btn = new ButtonComponent(headerEl)
 				.setIcon(tab.icon)
+				.setDisabled(isDisabled)
+				.setTooltip(isDisabled ? "API key required" : "", {
+					delay: -1,
+				})
 				.onClick(() => {
-					this.activeTabId = tab.id;
+					this.currentActiveTab = tab.id;
 					this.display();
 				});
 
 			btn.buttonEl.createSpan({
-				text: "Algemeen",
-				attr: { style: "margin-left: 0.5em" },
+				text: tab.title,
 			});
 
-			// Dit is de "magic" voor de styling:
 			if (isActive) {
-				btn.setCta(); // Maakt de knop paars (Call to Action) + regelt hovers
+				btn.setCta();
 				tab.render(containerEl);
-			} else {
-				btn.buttonEl.classList.add("mod-subtle"); // Maakt de knop subtieler
 			}
-
-			// Optioneel: voeg een class toe voor je eigen uitlijning (flexbox),
-			// maar NIET voor de kleuren/hover.
-			btn.buttonEl.addClass("tab-button");
 		});
-
-		if (false) {
-			// API key can be saved in data.json. Each user needs to setup their own private appwrite project.
-			// So environment will not be shared with others and apikey only accessible on client machine.
-			// If someone can access that then apikey is not biggest concern
-			// Maybe later: only store key in memory during initial setup.
-			new Setting(containerEl)
-				.setName("Appwrite API key")
-				.setDesc("Your server API key")
-				.addText((text) => {
-					text.inputEl.style.width = "250px";
-					text.inputEl.type = "password";
-
-					text.setPlaceholder(DEFAULT_SETTINGS.appwriteApiKey)
-						.setValue(this.plugin.settings.appwriteApiKey)
-						.onChange(async (value) => {
-							this.plugin.settings.appwriteApiKey = value;
-							await this.plugin.saveSettings();
-						});
-				});
-		}
 	}
+
 	private getTabs(): Tab[] {
-		return [
+		const tabs = [
 			{
 				id: "general",
 				title: "Algemeen",
 				icon: "settings",
-				render: (containerEl: HTMLElement) =>
-					this.renderGeneralSettings(containerEl),
+				requiresApiKey: false,
+				render: (containerEl: HTMLElement) => {
+					this.renderGeneralSettings(containerEl);
+				},
+			},
+			{
+				id: "preferences",
+				title: "Voorkeuren",
+				icon: "settings-2",
+				requiresApiKey: true,
+				render: (containerEl: HTMLElement) => {
+					this.renderPreferenceSettings(containerEl);
+				},
+			},
+			{
+				id: "team",
+				title: "Team",
+				icon: "users",
+				requiresApiKey: true,
+				render: (containerEl: HTMLElement) => {
+					this.renderTeamSettings(containerEl);
+				},
 			},
 			{
 				id: "advanced",
 				title: "Geavanceerd",
 				icon: "wrench",
-				render: (containerEl: HTMLElement) =>
-					this.renderAdvancedSettings(containerEl),
-			},
-			{
-				id: "about",
-				title: "Over",
-				icon: "info",
-				render: (containerEl: HTMLElement) =>
-					this.renderAboutSettings(containerEl),
+				requiresApiKey: true,
+				render: (containerEl: HTMLElement) => {
+					this.renderAdvancedSettings(containerEl);
+				},
 			},
 		];
+
+		return tabs;
 	}
 
 	private renderGeneralSettings(containerEl: HTMLElement) {
-		new Setting(containerEl)
-			.setName("Update database schema")
-			.setDesc("Werkt het schema bij in de database.")
-			.addButton((button) => {
-				button
-					.setButtonText("Update")
-					.setCta()
-					.onClick(async () => {});
-			});
+		new Setting(containerEl).setName("Project details").setHeading();
 
 		new Setting(containerEl)
-			.setName("Run first sync")
+			.setName("Appwrite Endpoint")
 			.setDesc(
-				"Choose if you want to pull from, or push to the server (merge not yet available)",
+				"The url to reach your Appwrite project (should end with /v1).",
 			)
-			.addButton((button) => {
-				button
-					.setCta()
-					.setButtonText("Sync")
-					.onClick(() => {});
-			});
-	}
-
-	private renderAdvancedSettings(containerEl: HTMLElement) {
-		new Setting(containerEl)
-			.setName("Appwrite endpoint")
-			.setDesc("The url where your Appwrite project can be reached")
-			.addText((text) => {
-				text.inputEl.style.width = "250px";
-
-				text.setPlaceholder(DEFAULT_SETTINGS.appwriteEndpoint)
+			.addText((input) => {
+				input
 					.setValue(this.plugin.settings.appwriteEndpoint)
 					.onChange(async (value) => {
 						this.plugin.settings.appwriteEndpoint = value;
 						await this.plugin.saveSettings();
 					});
 			});
-		new Setting(containerEl)
-			.setName("Appwrite project id")
-			.setDesc("The id of your Appwrite project")
-			.addText((text) => {
-				text.inputEl.style.width = "250px";
 
-				text.setPlaceholder(DEFAULT_SETTINGS.appwriteProjectId)
+		new Setting(containerEl)
+			.setName("Appwrite Project")
+			.setDesc(
+				"The id of your Appwrite project. Default is 20 characters",
+			)
+			.addText((input) => {
+				input
 					.setValue(this.plugin.settings.appwriteProjectId)
 					.onChange(async (value) => {
 						this.plugin.settings.appwriteProjectId = value;
@@ -190,35 +168,103 @@ export class MyPluginSettingTab extends PluginSettingTab {
 			});
 
 		new Setting(containerEl)
-			.setName("API key")
-			.setDesc("Select a secret from SecretStorage")
+			.setName("Unlock advanced features")
+			.setHeading();
+
+		new Setting(containerEl)
+			.setName("Appwrite API key")
+			.setDesc(
+				"Will be stored securely on your device. Needed for initial setup and advanced features.",
+			)
 			.addComponent((el) =>
 				new SecretComponent(this.app, el)
 					.setValue(this.plugin.settings.appwriteApiKey)
-					.onChange((value) => {
+					.onChange(async (value) => {
 						this.plugin.settings.appwriteApiKey = value;
-						this.plugin.saveSettings();
+						await this.plugin.saveSettings();
+
+						let connected: boolean = false;
+						if (value) {
+							connected = await this.plugin.appwrite.testApiKey();
+							new Notice(
+								`Api key ${!connected ? "is not " : "is"} valid!`,
+							);
+						}
+
+						new Notice(
+							`Advanced features are now ${value && connected ? "enabled" : "disabled"}.`,
+						);
+
+						this.display();
 					}),
 			);
 	}
 
-	private renderAboutSettings(containerEl: HTMLElement) {
+	private renderPreferenceSettings(containerEl: HTMLElement) {
+		containerEl.createEl("p", {
+			text: "These settings are shared accross users and devices.",
+		});
+
 		new Setting(containerEl)
-			.setName("Reset appwrite")
-			.setDesc("This will delete ALL data in Appwrite!")
+			.setName("Sync plugins")
+			.setDesc(
+				"Wheter or not you want to sync plugins accross all devices",
+			)
+			.addToggle((toggle) => {
+				toggle
+					.setValue(this.plugin.settings.syncPlugins)
+					.onChange((value) => {
+						this.plugin.settings.syncPlugins = value;
+						this.plugin.saveSettings();
+					});
+			});
+	}
+
+	private renderTeamSettings(containerEl: HTMLElement) {
+		const columns = ["Name", "Joined at", "Status"];
+		const rows = [
+			{ name: "Gert Jan", joined_at: "Today", status: "Verified" },
+			{ name: "Pieter", joined_at: "Today", status: "Verified" },
+			{ name: "Evert", joined_at: "Today", status: "Verified" },
+			{ name: "Tromp", joined_at: "Today", status: "Verified" },
+		];
+
+		const table = containerEl.createEl("table", {
+			cls: "aos-settings-table",
+		});
+
+		const tbody = table.createEl("tbody");
+
+		for (const row of rows) {
+			const tr = tbody.createEl("tr");
+			tr.createEl("td", {
+				text: row.name,
+			});
+			tr.createEl("td", {
+				text: row.joined_at,
+			});
+			tr.createEl("td", {
+				text: row.status,
+			});
+		}
+	}
+
+	private renderAdvancedSettings(containerEl: HTMLElement) {
+		new Setting(containerEl)
+			.setName("Reset settings")
 			.addButton((button) => {
 				button
-					.setButtonText("delete")
+					.setButtonText("Reset")
 					.setWarning()
 					.onClick(() => {
-						new ConfirmModal(this.app, {
-							title: "Are you really, really sure?",
-							message:
-								"This will really delete all data on your Appwrite server!!",
-							countdown: 10,
-							setWarning: true,
-							onConfirm: async () => {},
-						}).open();
+						this.plugin.settings = DEFAULT_SETTINGS;
+						this.plugin.saveSettings();
+						this.currentActiveTab = "general";
+						this.display();
+						new Notice(
+							"Settings set back to default settings",
+							5000,
+						);
 					});
 			});
 	}

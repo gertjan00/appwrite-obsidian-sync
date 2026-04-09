@@ -1,7 +1,22 @@
-/* Alleen voor de positionering, niet voor de styling! */
 .aos-settings-tab .tab-header {
 	display: flex;
-	gap: 8px;
-	margin-bottom: 20px;
-	overflow-x: scroll;
+	flex-wrap: nowrap;
+	padding-bottom: 0.5em;
+	margin-bottom: 2em;
+	gap: 0.5em;
+	box-shadow: 0 2px 2px -2px var(--color-base-60);
 }
+
+.aos-settings-tab .tab-header button span {
+	padding-left: 0.5em;
+}
+
+.aos-settings-tab .setting-item .setting-item-info {
+	min-width: 100px;
+}
+
+.aos-settings-tab .setting-item input {
+	width: 250px;
+}
+
+/* Team settings */

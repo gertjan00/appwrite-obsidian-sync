@@ -95,4 +95,34 @@ if (prod) {
 	process.exit(0);
 } else {
 	await context.watch();
+
+	const rootFilesToWatch = ["styles.css", "manifest.json"];
+
+	rootFilesToWatch.forEach((file) => {
+		if (fs.existsSync(file)) {
+			let timeout;
+			fs.watch(file, (eventType) => {
+				if (eventType === "change") {
+					clearTimeout(timeout);
+					timeout = setTimeout(() => {
+						try {
+							if (!fs.existsSync(vaultPath)) {
+								fs.mkdirSync(vaultPath, { recursive: true });
+							}
+
+							fs.copyFileSync(file, path.join(vaultPath, file));
+							console.info(
+								`[Watch] 🎨 ${file} gewijzigd en direct gekopieerd naar vault!`,
+							);
+						} catch (error) {
+							console.error(
+								`[Watch] ❌ Kopiëren van ${file} mislukt:`,
+								error.message,
+							);
+						}
+					}, 50);
+				}
+			});
+		}
+	});
 }

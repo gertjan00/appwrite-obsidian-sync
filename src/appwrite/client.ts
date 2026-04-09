@@ -11,13 +11,16 @@ export class AppwriteService {
 	public pullAllFiles;
 	public createSchema;
 	public createBucket;
+	public testApiKey;
 
 	constructor(settings: MyPluginSettings, app: App) {
-		this.http = new AppwriteHttpService(settings);
+		this.http = new AppwriteHttpService(settings, app.secretStorage);
 		this.sync = new AppwriteSyncService(app.vault, this.http);
 
 		this.createBucket = this.http.createBucket;
 		this.createSchema = this.http.createSchema;
+		this.testApiKey = this.http.testApiKey;
+
 		this.pushAllFiles = this.sync.pushAllFiles;
 		this.pullAllFiles = this.sync.pullAllFiles;
 	}
