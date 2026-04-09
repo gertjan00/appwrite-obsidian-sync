@@ -221,7 +221,13 @@ export class MyPluginSettingTab extends PluginSettingTab {
 	}
 
 	private renderTeamSettings(containerEl: HTMLElement) {
-		const columns = ["Name", "Joined at", "Status"];
+		const columns = [
+			{ key: "name", caption: "Name" },
+			{ key: "joinedAt", caption: "Joined at" },
+			{ key: "status", caption: "Status" },
+			{ key: "last_seen", caption: "Last seen" },
+			{ key: "devices", caption: "Devices" },
+		];
 		const rows = [
 			{ name: "Gert Jan", joined_at: "Today", status: "Verified" },
 			{ name: "Pieter", joined_at: "Today", status: "Verified" },
@@ -237,6 +243,12 @@ export class MyPluginSettingTab extends PluginSettingTab {
 
 		for (const row of rows) {
 			const tr = tbody.createEl("tr");
+			for (const column of columns) {
+				tr.createEl("td", {
+					text: row[column.key] || "",
+				});
+			}
+
 			tr.createEl("td", {
 				text: row.name,
 			});
