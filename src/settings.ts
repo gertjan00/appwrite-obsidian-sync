@@ -340,22 +340,21 @@ export class MyPluginSettingTab extends PluginSettingTab {
 		const tbody = table.createEl("tbody");
 
 		for (const row of rows) {
-			const tr = tbody.createEl("tr");
-			for (const column of columns) {
-				tr.createEl("td", {
-					text: row[column.key] || "",
-				});
-			}
-
-			tr.createEl("td", {
-				text: row.name,
-			});
-			tr.createEl("td", {
-				text: row.joined_at,
-			});
-			tr.createEl("td", {
-				text: row.status,
-			});
+			// const tr = tbody.createEl("tr");
+			// for (const column of columns) {
+			// 	tr.createEl("td", {
+			// 		text: row[column.key] || "",
+			// 	});
+			// }
+			// tr.createEl("td", {
+			// 	text: row.name,
+			// });
+			// tr.createEl("td", {
+			// 	text: row.joined_at,
+			// });
+			// tr.createEl("td", {
+			// 	text: row.status,
+			// });
 		}
 	}
 
