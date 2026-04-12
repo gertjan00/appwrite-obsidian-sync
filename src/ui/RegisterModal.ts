@@ -68,6 +68,7 @@ export class RegisterModal extends Modal {
 							this.password,
 						);
 						new Notice("Account created successfully!");
+
 						this.close();
 						this.onSuccess();
 					} catch (e: any) {
