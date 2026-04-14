@@ -28,7 +28,7 @@ export class AppwriteAdminService {
 	public tablesDB: TablesDB;
 	public storage: Storage;
 
-	constructor(private adminClient: ObsidianAdminClient) {
+	constructor(adminClient: ObsidianAdminClient) {
 		this.tablesDB = new TablesDB(adminClient);
 		this.storage = new Storage(adminClient);
 	}
@@ -110,38 +110,17 @@ export class AppwriteAdminService {
 	) {
 		const { tablesDB } = this;
 		const { databaseId, tableId } = props;
-		const column = props.column as ColumnDefinition;
+		const column = props.column;
 
 		const { type, ...rest } = column;
 
-		const payload = {
+		const payload: any = {
 			databaseId: databaseId,
 			tableId: tableId,
 			...rest,
 		};
 
 		switch (type) {
-			case "boolean":
-				tablesDB.createBooleanColumn(payload);
-				break;
-
-			case "email":
-				tablesDB.createEmailColumn(payload);
-				break;
-
-			case "enum":
-				tablesDB.createEnumColumn(payload);
-				break;
-
-			case "ip":
-				break;
-
-			case "mediumtext":
-				break;
-
-			case "url":
-				break;
-
 			case "datetime":
 				tablesDB.createDatetimeColumn(payload);
 				break;
