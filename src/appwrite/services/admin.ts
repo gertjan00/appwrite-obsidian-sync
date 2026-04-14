@@ -1,6 +1,6 @@
 import { ObsidianAdminClient } from "appwrite/obsidian-clients";
-import { Storage, TablesDB } from "node-appwrite";
-import { ColumnDefinition, template } from "types/schema-template";
+import { Models, Storage, TablesDB } from "node-appwrite";
+import { template } from "types/schema-template";
 import { SyncLogger } from "types/sync-logger";
 import { never } from "utils";
 
@@ -105,7 +105,7 @@ export class AppwriteAdminService {
 		}
 	};
 
-	createColumn<D extends TDatabaseId, T extends TTableId<D>>(
+	async createColumn<D extends TDatabaseId, T extends TTableId<D>>(
 		props: createColumnProps<D, T>,
 	) {
 		const { tablesDB } = this;
@@ -122,27 +122,46 @@ export class AppwriteAdminService {
 
 		switch (type) {
 			case "datetime":
-				tablesDB.createDatetimeColumn(payload);
+				await tablesDB.createDatetimeColumn(payload);
 				break;
 
 			case "integer":
-				tablesDB.createIntegerColumn(payload);
+				await tablesDB.createIntegerColumn(payload);
 				break;
 
 			case "varchar":
-				tablesDB.createVarcharColumn(payload);
+				await tablesDB.createVarcharColumn(payload);
 				break;
 
 			case "text":
-				tablesDB.createTextColumn(payload);
+				await tablesDB.createTextColumn(payload);
 				break;
 
 			case "longtext":
-				tablesDB.createLongtextColumn(payload);
+				await tablesDB.createLongtextColumn(payload);
 				break;
 
 			default:
 				never(type);
+		}
+	}
+
+	async deleteAll() {
+		const { tablesDB, storage } = this;
+
+		const databases = (await tablesDB.list()).databases;
+
+		for (const database of databases) {
+			await tablesDB.delete({ databaseId: database.$id });
+			console.log(`Database '${database.$id}' verwijderd`);
+		}
+
+		const buckets = (await storage.listBuckets()).buckets;
+		for (const bucket of buckets) {
+			await storage.deleteBucket({
+				bucketId: bucket.$id,
+			});
+			console.log(`Storage bucket '${bucket.$id}' verwijderd`);
 		}
 	}
 }

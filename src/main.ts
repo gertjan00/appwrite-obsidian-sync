@@ -11,6 +11,8 @@ export default class MyPlugin extends Plugin {
 	public appwrite!: AppwriteService;
 
 	async onload() {
+		console.log("start onload()");
+		await sleep(5000);
 		await this.loadSettings();
 
 		this.addSettingTab(new MyPluginSettingTab(this.app, this));
@@ -18,9 +20,18 @@ export default class MyPlugin extends Plugin {
 		this.appwrite.reconfigure();
 
 		console.log(await this.appwrite.admin.tablesDB.list());
+
+		console.log("start updateSchema()");
+		await this.appwrite.admin.updateSchema();
+		console.log("einde updateSchema()");
 	}
 
-	onunload() {}
+	async onunload() {
+		console.log("Start onunload()");
+		await this.appwrite.admin.deleteAll();
+		await sleep(2000);
+		console.log("Einde onunload()");
+	}
 
 	async loadSettings() {
 		this.settings = Object.assign(
