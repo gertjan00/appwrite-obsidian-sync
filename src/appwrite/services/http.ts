@@ -119,7 +119,6 @@ export class AppwriteHttpService {
 		);
 
 		log("Database resetten", 0);
-		await this.resetAll();
 		await sleep(1000);
 
 		log("Starting setup database", 0);
@@ -174,20 +173,4 @@ export class AppwriteHttpService {
 	// DANGER ZONE
 
 	// Deze functie alleen tijdens testen gebruiken
-	resetAll = async () => {
-		console.info("Start reset alles");
-		const dbList: Models.DatabaseList = await this.request(
-			"GET",
-			`/tablesdb/`,
-		);
-
-		dbList.databases.forEach(async (database) => {
-			try {
-				console.log(`"${database.name}" verwijderen`);
-				await this.request("DELETE", `/tablesdb/${database.$id}`);
-			} catch (e: any) {
-				if (e) console.error(e);
-			}
-		});
-	};
 }

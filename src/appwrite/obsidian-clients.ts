@@ -134,7 +134,7 @@ async function appwriteCall(
 		let errorData: any;
 		try {
 			errorData =
-				typeof response.json === "object"
+				response.json !== null && typeof response.json === "object"
 					? response.json
 					: JSON.parse(response.text);
 		} catch {
@@ -153,7 +153,7 @@ async function appwriteCall(
 	if (responseType === "text") return response.text;
 
 	try {
-		return typeof response.json === "object"
+		return response.json !== null && typeof response.json === "object"
 			? response.json
 			: JSON.parse(response.text);
 	} catch {

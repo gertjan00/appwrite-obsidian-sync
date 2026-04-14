@@ -109,9 +109,7 @@ export class MyPluginSettingTab extends PluginSettingTab {
 					errors.push("API key is required");
 				}
 
-				const apiKeyValid = (async () => {
-					await this.plugin.appwrite.testApiKey();
-				})();
+				const apiKeyValid = (async () => {})();
 				if (apiKey && !apiKeyValid) {
 					errors.push(
 						"API key is not valid or does not have the required scopes",
@@ -205,8 +203,6 @@ export class MyPluginSettingTab extends PluginSettingTab {
 
 							let connected: boolean = false;
 							if (value) {
-								connected =
-									await this.plugin.appwrite.testApiKey();
 								new Notice(
 									`Api key ${!connected ? "is not " : "is"} valid!`,
 								);
