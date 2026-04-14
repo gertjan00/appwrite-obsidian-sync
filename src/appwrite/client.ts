@@ -1,49 +1,28 @@
 import { App, SecretStorage } from "obsidian";
 import { MyPluginSettings } from "settings";
 import { ObsidianAdminClient, ObsidianUserClient } from "./obsidian-clients";
-import sdk, {
-	TablesDB as AdminTablesDB,
-	Account as AdminAccount,
-} from "node-appwrite";
-import {
-	TablesDB as UserTablesDB,
-	Account as UserAccount,
-	TablesDB,
-	Account,
-} from "appwrite";
+import { AppwriteAdminService } from "./services/admin";
+import { AppwriteUserService } from "./services/user";
 
 export class AppwriteService {
 	private userClient: ObsidianUserClient;
 	private adminClient: ObsidianAdminClient;
 	private secretStorage: SecretStorage;
 
-	public admin: {
-		account: AdminAccount;
-		tablesDB: AdminTablesDB;
-	};
-
-	public user: {
-		account: UserAccount;
-		tablesDB: UserTablesDB;
-	};
+	public admin: AppwriteAdminService;
+	public user: AppwriteUserService;
 
 	constructor(
 		private settings: MyPluginSettings,
 		app: App,
 	) {
-		this.userClient = new ObsidianUserClient();
-		this.adminClient = new ObsidianAdminClient();
 		this.secretStorage = app.secretStorage;
 
-		this.admin = {
-			account: new sdk.Account(this.adminClient),
-			tablesDB: new sdk.TablesDB(this.adminClient),
-		};
+		this.userClient = new ObsidianUserClient();
+		this.user = new AppwriteUserService(this.userClient);
 
-		this.user = {
-			account: new Account(this.userClient),
-			tablesDB: new TablesDB(this.userClient),
-		};
+		this.adminClient = new ObsidianAdminClient();
+		this.admin = new AppwriteAdminService(this.adminClient);
 	}
 
 	reconfigure() {

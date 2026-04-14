@@ -70,7 +70,7 @@ async function appwriteCall(
 	responseType = "json",
 ) {
 	const mergedHeaders: Record<string, string> = {
-		...(client.headers || {}),
+		...client.headers,
 		...headers,
 	};
 
@@ -84,59 +84,46 @@ async function appwriteCall(
 
 	if (upperMethod === "GET") {
 		const urlObj = new URL(options.url);
+
 		for (const [k, v] of Object.entries(params)) {
 			if (Array.isArray(v)) {
-				v.forEach((i) =>
-					urlObj.searchParams.append(`${k}[]`, String(i)),
-				);
+				for (const item of v) {
+					urlObj.searchParams.append(`${k}[]`, String(item));
+				}
 			} else {
 				urlObj.searchParams.append(k, String(v));
 			}
 		}
+
 		options.url = urlObj.toString();
-	} else if (typeof FormData !== "undefined" && params instanceof FormData) {
+	} else if (params instanceof FormData) {
 		const { buffer, boundary } = await buildMultipartPayload(params);
 		options.body = buffer;
 
-		for (const key of Object.keys(mergedHeaders)) {
-			if (key.toLowerCase() === "content-type") delete mergedHeaders[key];
-		}
-		mergedHeaders["Content-Type"] =
+		delete mergedHeaders["Content-Type"];
+		mergedHeaders["content-type"] =
 			`multipart/form-data; boundary=${boundary}`;
 	} else {
 		options.body = JSON.stringify(params);
-		if (
-			!Object.keys(mergedHeaders).some(
-				(k) => k.toLowerCase() === "content-type",
-			)
-		) {
+
+		if (!mergedHeaders["Content-Type"] && !mergedHeaders["content-type"]) {
 			mergedHeaders["Content-Type"] = "application/json";
 		}
 	}
 
 	const response = await requestUrl(options);
-	const responseHeaders = response.headers || {};
+	const fallbackCookie = response.headers?.["x-fallback-cookies"];
 
-	const fallbackCookie =
-		responseHeaders["x-fallback-cookies"] ||
-		responseHeaders["X-Fallback-Cookies"];
-
-	if (
-		fallbackCookie &&
-		typeof window !== "undefined" &&
-		window.localStorage
-	) {
+	if (fallbackCookie) {
 		window.localStorage.setItem("cookieFallback", fallbackCookie);
-		client.addHeader("X-Fallback-Cookies", fallbackCookie);
+		client.headers["X-Fallback-Cookies"] = fallbackCookie;
 	}
 
 	if (response.status >= 400) {
 		let errorData: any;
+
 		try {
-			errorData =
-				response.json !== null && typeof response.json === "object"
-					? response.json
-					: JSON.parse(response.text);
+			errorData = response.json ?? JSON.parse(response.text);
 		} catch {
 			errorData = { message: response.text || "Unknown Server Error" };
 		}
@@ -153,9 +140,7 @@ async function appwriteCall(
 	if (responseType === "text") return response.text;
 
 	try {
-		return response.json !== null && typeof response.json === "object"
-			? response.json
-			: JSON.parse(response.text);
+		return response.json ?? JSON.parse(response.text);
 	} catch {
 		return response.text;
 	}

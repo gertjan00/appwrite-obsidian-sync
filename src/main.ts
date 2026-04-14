@@ -5,11 +5,6 @@ import {
 	MyPluginSettingTab,
 } from "./settings";
 import { AppwriteService } from "appwrite/client";
-import {
-	ObsidianAdminClient,
-	ObsidianUserClient,
-} from "appwrite/obsidian-clients";
-import { Account } from "appwrite";
 
 export default class MyPlugin extends Plugin {
 	public settings!: MyPluginSettings;
@@ -20,6 +15,9 @@ export default class MyPlugin extends Plugin {
 
 		this.addSettingTab(new MyPluginSettingTab(this.app, this));
 		this.appwrite = new AppwriteService(this.settings, this.app);
+		this.appwrite.reconfigure();
+
+		console.log(await this.appwrite.admin.tablesDB.list());
 	}
 
 	onunload() {}
