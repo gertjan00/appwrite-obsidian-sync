@@ -9,7 +9,7 @@
 		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
 		"version": "node version-bump.mjs && git add manifest.json versions.json",
 		"lint": "eslint .",
-		"appwrite:generate": "appwrite generate --import-extension .ts && node scripts/fix-appwrite-generation.mjs"
+		"appwrite:generate": "appwrite pull all --force && appwrite generate --import-extension .ts -o src/generated && node scripts/fix-appwrite-generation.mjs"
 	},
 	"keywords": [],
 	"license": "0-BSD",

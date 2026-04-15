@@ -29,9 +29,10 @@ const createQueryBuilder = <T>(): QueryBuilder<T> => ({
 });
 
 const tableIdMap: Record<string, Record<string, string>> = Object.create(null);
-tableIdMap["69cf93310034c03294d7"] = Object.create(null);
-tableIdMap["69cf93310034c03294d7"]["table 1"] = "table_1";
-tableIdMap["69cf93310034c03294d7"]["table 2"] = "table_2";
+tableIdMap["obsidian"] = Object.create(null);
+tableIdMap["obsidian"]["settings"] = "settings";
+tableIdMap["obsidian"]["files"] = "files";
+tableIdMap["obsidian"]["presence"] = "presence";
 
 const tablesWithRelationships = new Set<string>();
 

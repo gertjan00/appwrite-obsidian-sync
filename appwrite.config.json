@@ -24,7 +24,7 @@
                 "anonymous": false,
                 "email-otp": false,
                 "magic-url": false,
-                "email-password": false
+                "email-password": true
             },
             "security": {
                 "duration": 31536000,
@@ -40,166 +40,191 @@
     },
     "tablesDB": [
         {
-            "$id": "69cf93310034c03294d7",
-            "name": "test db",
+            "$id": "obsidian",
+            "name": "Obsidian",
             "enabled": true
         }
     ],
     "tables": [
         {
-            "$id": "table_1",
+            "$id": "settings",
             "$permissions": [],
-            "databaseId": "69cf93310034c03294d7",
-            "name": "table 1",
+            "databaseId": "obsidian",
+            "name": "settings",
             "enabled": true,
             "rowSecurity": false,
             "columns": [
                 {
-                    "key": "email",
-                    "type": "string",
-                    "required": false,
+                    "key": "key",
+                    "type": "varchar",
+                    "required": true,
                     "array": false,
-                    "default": null,
-                    "format": "email"
-                },
-                {
-                    "key": "description",
-                    "type": "string",
-                    "required": false,
-                    "array": false,
-                    "size": 1000,
+                    "size": 128,
                     "default": null,
                     "encrypt": false
                 },
                 {
-                    "key": "city",
-                    "type": "string",
-                    "required": false,
+                    "key": "value",
+                    "type": "text",
+                    "required": true,
                     "array": false,
-                    "size": 100,
                     "default": null,
                     "encrypt": false
-                },
-                {
-                    "key": "name",
-                    "type": "string",
-                    "required": false,
-                    "array": false,
-                    "size": 255,
-                    "default": null,
-                    "encrypt": false
-                },
-                {
-                    "key": "route",
-                    "type": "linestring",
-                    "required": false,
-                    "array": false,
-                    "default": null
-                },
-                {
-                    "key": "active",
-                    "type": "boolean",
-                    "required": false,
-                    "array": false,
-                    "default": null
-                },
-                {
-                    "key": "age",
-                    "type": "integer",
-                    "required": false,
-                    "array": false,
-                    "default": null,
-                    "min": 18,
-                    "max": 80
-                },
-                {
-                    "key": "location",
-                    "type": "point",
-                    "required": false,
-                    "array": false,
-                    "default": null
                 }
             ],
             "indexes": []
         },
         {
-            "$id": "table_2",
+            "$id": "files",
             "$permissions": [],
-            "databaseId": "69cf93310034c03294d7",
-            "name": "table 2",
+            "databaseId": "obsidian",
+            "name": "files",
             "enabled": true,
             "rowSecurity": false,
             "columns": [
                 {
-                    "key": "name",
-                    "type": "string",
+                    "key": "path",
+                    "type": "varchar",
+                    "required": true,
+                    "array": false,
+                    "size": 767,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "content",
+                    "type": "longtext",
                     "required": false,
+                    "array": false,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "last_modified_by",
+                    "type": "varchar",
+                    "required": true,
                     "array": false,
                     "size": 255,
                     "default": null,
                     "encrypt": false
                 },
                 {
-                    "key": "description",
-                    "type": "string",
-                    "required": false,
+                    "key": "last_modified_at",
+                    "type": "datetime",
+                    "required": true,
                     "array": false,
-                    "size": 1000,
+                    "default": null,
+                    "format": ""
+                },
+                {
+                    "key": "checksum",
+                    "type": "varchar",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                }
+            ],
+            "indexes": []
+        },
+        {
+            "$id": "presence",
+            "$permissions": [],
+            "databaseId": "obsidian",
+            "name": "presence",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "user_id",
+                    "type": "varchar",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
                     "default": null,
                     "encrypt": false
                 },
                 {
-                    "key": "email",
-                    "type": "string",
-                    "required": false,
+                    "key": "user_name",
+                    "type": "varchar",
+                    "required": true,
                     "array": false,
-                    "default": null,
-                    "format": "email"
-                },
-                {
-                    "key": "active",
-                    "type": "boolean",
-                    "required": false,
-                    "array": false,
-                    "default": null
-                },
-                {
-                    "key": "location",
-                    "type": "point",
-                    "required": false,
-                    "array": false,
-                    "default": null
-                },
-                {
-                    "key": "city",
-                    "type": "string",
-                    "required": false,
-                    "array": false,
-                    "size": 100,
+                    "size": 255,
                     "default": null,
                     "encrypt": false
                 },
                 {
-                    "key": "route",
-                    "type": "linestring",
-                    "required": false,
+                    "key": "color",
+                    "type": "varchar",
+                    "required": true,
                     "array": false,
-                    "default": null
+                    "size": 10,
+                    "default": null,
+                    "encrypt": false
                 },
                 {
-                    "key": "age",
+                    "key": "file_path",
+                    "type": "varchar",
+                    "required": true,
+                    "array": false,
+                    "size": 767,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "cursor_line",
                     "type": "integer",
-                    "required": false,
+                    "required": true,
                     "array": false,
                     "default": null,
-                    "min": 18,
-                    "max": 80
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807
+                },
+                {
+                    "key": "cursor_char",
+                    "type": "integer",
+                    "required": true,
+                    "array": false,
+                    "default": null,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807
+                },
+                {
+                    "key": "last_seen_at",
+                    "type": "datetime",
+                    "required": true,
+                    "array": false,
+                    "default": null,
+                    "format": ""
                 }
             ],
             "indexes": []
         }
     ],
-    "buckets": [],
-    "teams": [],
+    "buckets": [
+        {
+            "$id": "binary_files",
+            "$permissions": [],
+            "fileSecurity": false,
+            "name": "Binary Files",
+            "enabled": true,
+            "maximumFileSize": 30000000,
+            "allowedFileExtensions": [],
+            "compression": "none",
+            "encryption": true,
+            "antivirus": true
+        }
+    ],
+    "teams": [
+        {
+            "$id": "members",
+            "$createdAt": "2026-04-06T20:47:30.746+00:00",
+            "$updatedAt": "2026-04-06T20:47:30.746+00:00",
+            "name": "Members",
+            "total": 0,
+            "prefs": {}
+        }
+    ],
     "topics": []
 }

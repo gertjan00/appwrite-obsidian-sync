@@ -1,6 +1,6 @@
 import fs from "fs";
 
-const dir = "./generated/appwrite";
+const dir = "src/generated/appwrite";
 
 (() => {
 	const files = fs.readdirSync(dir, { withFileTypes: true });

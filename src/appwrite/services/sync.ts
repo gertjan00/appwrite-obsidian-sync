@@ -1,6 +1,7 @@
 import { Vault, TFile, Notice } from "obsidian";
 import { SyncLogger } from "types/sync-logger";
 import { Query } from "node-appwrite";
+import { databases } from "generated/appwrite";
 
 export class AppwriteSyncService {
 	constructor(private vault: Vault) {}
@@ -23,7 +24,7 @@ export class AppwriteSyncService {
 		let i = 1;
 		for (const file of files) {
 			try {
-				await this.pushFile(file, databaseId, collectionId);
+				await this.pushFile(file);
 				log(`uploaded (${i}/${files.length}) '${file.path}'`, 2);
 			} catch (e) {
 				log(
@@ -37,11 +38,7 @@ export class AppwriteSyncService {
 		}
 	};
 
-	pushFile = async (
-		file: TFile,
-		databaseId: string,
-		collectionId: string,
-	) => {
+	pushFile = async (file: TFile) => {
 		const isBinary = ["md", "canvas", "txt"].includes(file.extension);
 
 		if (isBinary) {
@@ -64,7 +61,6 @@ export class AppwriteSyncService {
 			},
 		};
 
-		const url = `/tablesdb/${databaseId}/tables/${collectionId}/rows`;
 		return;
 	};
 
