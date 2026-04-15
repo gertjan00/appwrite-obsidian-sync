@@ -1,11 +1,12 @@
 import { App, Modal, Setting, Notice, ButtonComponent } from "obsidian";
 import { AppwriteService } from "appwrite/client";
 import { Models } from "node-appwrite";
+import { AppwriteException, ID } from "appwrite";
 
 export class RegisterModal extends Modal {
-	private email = "";
-	private password = "";
-	private confirmPassword = "";
+	private email = "email@example.com";
+	private password = "12345678";
+	private confirmPassword = "12345678";
 	private registerButton!: ButtonComponent;
 
 	constructor(
@@ -41,7 +42,7 @@ export class RegisterModal extends Modal {
 
 		new Setting(contentEl).setName("Password").addText((text) => {
 			text.inputEl.type = "password";
-			text.onChange((value) => {
+			text.setValue(this.password).onChange((value) => {
 				this.password = value;
 				this.validate();
 			});
@@ -49,7 +50,7 @@ export class RegisterModal extends Modal {
 
 		new Setting(contentEl).setName("Confirm Password").addText((text) => {
 			text.inputEl.type = "password";
-			text.onChange((value) => {
+			text.setValue(this.password).onChange((value) => {
 				this.confirmPassword = value;
 				this.validate();
 			});
@@ -64,26 +65,27 @@ export class RegisterModal extends Modal {
 					btn.setDisabled(true);
 
 					try {
-						await this.appwrite.registerUser(
-							this.email,
-							this.password,
-						);
-						new Notice("Account created successfully!");
-						const user =
-							await this.appwrite.createEmailPasswordSession(
-								this.email,
-								this.password,
-							);
+						const { account } = this.appwrite.user;
+
+						await account.create({
+							userId: ID.unique(),
+							email: this.email,
+							password: this.password,
+						});
+
+						const user = await account.createEmailPasswordSession({
+							email: this.email,
+							password: this.password,
+						});
 
 						this.close();
 						this.onSuccess(user);
-					} catch (e: any) {
-						console.error(e);
-						new Notice(
-							`Registration failed: ${e.message || "Unknown error"}`,
-						);
-						this.validate();
-						btn.setButtonText("Register");
+					} catch (e) {
+						if (e instanceof AppwriteException) {
+							new Notice(e.message);
+						}
+					} finally {
+						btn.setDisabled(false);
 					}
 				});
 		});

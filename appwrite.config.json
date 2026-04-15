@@ -16,6 +16,7 @@
             "graphql": true,
             "messaging": true
         },
+        "protocols": {},
         "auth": {
             "methods": {
                 "jwt": false,
@@ -38,184 +39,6 @@
             }
         }
     },
-    "tablesDB": [
-        {
-            "$id": "obsidian",
-            "name": "Obsidian",
-            "enabled": true
-        }
-    ],
-    "tables": [
-        {
-            "$id": "settings",
-            "$permissions": [],
-            "databaseId": "obsidian",
-            "name": "settings",
-            "enabled": true,
-            "rowSecurity": false,
-            "columns": [
-                {
-                    "key": "key",
-                    "type": "varchar",
-                    "required": true,
-                    "array": false,
-                    "size": 128,
-                    "default": null,
-                    "encrypt": false
-                },
-                {
-                    "key": "value",
-                    "type": "text",
-                    "required": true,
-                    "array": false,
-                    "default": null,
-                    "encrypt": false
-                }
-            ],
-            "indexes": []
-        },
-        {
-            "$id": "files",
-            "$permissions": [],
-            "databaseId": "obsidian",
-            "name": "files",
-            "enabled": true,
-            "rowSecurity": false,
-            "columns": [
-                {
-                    "key": "path",
-                    "type": "varchar",
-                    "required": true,
-                    "array": false,
-                    "size": 767,
-                    "default": null,
-                    "encrypt": false
-                },
-                {
-                    "key": "content",
-                    "type": "longtext",
-                    "required": false,
-                    "array": false,
-                    "default": null,
-                    "encrypt": false
-                },
-                {
-                    "key": "last_modified_by",
-                    "type": "varchar",
-                    "required": true,
-                    "array": false,
-                    "size": 255,
-                    "default": null,
-                    "encrypt": false
-                },
-                {
-                    "key": "last_modified_at",
-                    "type": "datetime",
-                    "required": true,
-                    "array": false,
-                    "default": null,
-                    "format": ""
-                },
-                {
-                    "key": "checksum",
-                    "type": "varchar",
-                    "required": true,
-                    "array": false,
-                    "size": 255,
-                    "default": null,
-                    "encrypt": false
-                }
-            ],
-            "indexes": []
-        },
-        {
-            "$id": "presence",
-            "$permissions": [],
-            "databaseId": "obsidian",
-            "name": "presence",
-            "enabled": true,
-            "rowSecurity": false,
-            "columns": [
-                {
-                    "key": "user_id",
-                    "type": "varchar",
-                    "required": true,
-                    "array": false,
-                    "size": 255,
-                    "default": null,
-                    "encrypt": false
-                },
-                {
-                    "key": "user_name",
-                    "type": "varchar",
-                    "required": true,
-                    "array": false,
-                    "size": 255,
-                    "default": null,
-                    "encrypt": false
-                },
-                {
-                    "key": "color",
-                    "type": "varchar",
-                    "required": true,
-                    "array": false,
-                    "size": 10,
-                    "default": null,
-                    "encrypt": false
-                },
-                {
-                    "key": "file_path",
-                    "type": "varchar",
-                    "required": true,
-                    "array": false,
-                    "size": 767,
-                    "default": null,
-                    "encrypt": false
-                },
-                {
-                    "key": "cursor_line",
-                    "type": "integer",
-                    "required": true,
-                    "array": false,
-                    "default": null,
-                    "min": -9223372036854775808,
-                    "max": 9223372036854775807
-                },
-                {
-                    "key": "cursor_char",
-                    "type": "integer",
-                    "required": true,
-                    "array": false,
-                    "default": null,
-                    "min": -9223372036854775808,
-                    "max": 9223372036854775807
-                },
-                {
-                    "key": "last_seen_at",
-                    "type": "datetime",
-                    "required": true,
-                    "array": false,
-                    "default": null,
-                    "format": ""
-                }
-            ],
-            "indexes": []
-        }
-    ],
-    "buckets": [
-        {
-            "$id": "binary_files",
-            "$permissions": [],
-            "fileSecurity": false,
-            "name": "Binary Files",
-            "enabled": true,
-            "maximumFileSize": 30000000,
-            "allowedFileExtensions": [],
-            "compression": "none",
-            "encryption": true,
-            "antivirus": true
-        }
-    ],
     "teams": [
         {
             "$id": "members",
@@ -226,5 +49,5 @@
             "prefs": {}
         }
     ],
-    "topics": []
+    "webhooks": []
 }

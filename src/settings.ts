@@ -42,11 +42,11 @@ export const DEFAULT_SETTINGS: MyPluginSettings = {
 };
 
 export class MyPluginSettingTab extends PluginSettingTab {
-	plugin: MyPlugin;
+	private plugin: MyPlugin;
 	private currentActiveTab: string;
 
-	constructor(app: App, plugin: MyPlugin) {
-		super(app, plugin);
+	constructor(plugin: MyPlugin) {
+		super(plugin.app, plugin);
 		this.plugin = plugin;
 		this.currentActiveTab = "team";
 	}
@@ -231,7 +231,6 @@ export class MyPluginSettingTab extends PluginSettingTab {
 								this.app,
 								this.plugin.appwrite,
 								(user) => {
-									console.log(user);
 									new Notice("Start database inrichten...");
 								},
 							).open();

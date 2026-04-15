@@ -26,7 +26,7 @@ export class AppwriteService {
 		this.adminClient = new ObsidianAdminClient();
 		this.admin = new AppwriteAdminService(this.adminClient);
 
-		this.sync = new AppwriteSyncService(app.vault, this.admin.databases);
+		this.sync = new AppwriteSyncService(app.vault);
 	}
 
 	reconfigure() {

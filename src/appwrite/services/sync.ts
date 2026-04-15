@@ -1,13 +1,9 @@
 import { Vault, TFile, Notice } from "obsidian";
 import { SyncLogger } from "types/sync-logger";
 import { Query } from "node-appwrite";
-import { databases, DatabaseTables } from "generated/appwrite";
 
 export class AppwriteSyncService {
-	constructor(
-		private vault: Vault,
-		private databases: DatabaseTables,
-	) {}
+	constructor(private vault: Vault) {}
 
 	pushAllFiles = async (syncLogger?: SyncLogger) => {
 		const log =
@@ -44,16 +40,17 @@ export class AppwriteSyncService {
 	};
 
 	pushFile = async (file: TFile) => {
-		const filesTable = this.databases.use("obsidian").use("files");
+		// const filesTable = this.databases.use("obsidian").use("files");
 
-		await filesTable.create({
-			path: file.path,
-			content: await this.vault.read(file),
-			checksum: "3",
-			last_modified_by: "obsidian client",
-			last_modified_at: new Date(file.stat.mtime).toISOString(),
-		});
+		// await filesTable.create({
+		// 	path: file.path,
+		// 	content: await this.vault.read(file),
+		// 	checksum: "3",
+		// 	last_modified_by: "obsidian client",
+		// 	last_modified_at: new Date(file.stat.mtime).toISOString(),
+		// });
 
+		// TODO: databases niet meer gebruiken, wat anders verzinnen
 		return;
 	};
 

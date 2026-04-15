@@ -1,7 +1,12 @@
 import { ObsidianAdminClient } from "appwrite/obsidian-clients";
-import { DatabaseTables } from "generated/appwrite";
-import { createDatabasesApi } from "generated/appwrite/databases";
-import { AppwriteException, Models, Storage, TablesDB } from "node-appwrite";
+import {
+	Account,
+	AppwriteException,
+	Models,
+	Storage,
+	TablesDB,
+	Users,
+} from "node-appwrite";
 import { template } from "types/schema-template";
 import { SyncLogger } from "types/sync-logger";
 import { never } from "utils";
@@ -29,12 +34,14 @@ interface createColumnProps<D extends TDatabaseId, T extends TTableId<D>> {
 export class AppwriteAdminService {
 	public tablesDB: TablesDB;
 	public storage: Storage;
-	public databases: DatabaseTables;
+	public account: Account;
+	public users: Users;
 
 	constructor(adminClient: ObsidianAdminClient) {
 		this.tablesDB = new TablesDB(adminClient);
 		this.storage = new Storage(adminClient);
-		this.databases = createDatabasesApi(this.tablesDB as any);
+		this.account = new Account(adminClient);
+		this.users = new Users(adminClient);
 	}
 
 	updateSchema = async (syncLogger?: SyncLogger): Promise<void> => {
@@ -209,6 +216,11 @@ export class AppwriteAdminService {
 				bucketId: bucket.$id,
 			});
 			console.log(`Storage bucket '${bucket.$id}' verwijderd`);
+		}
+
+		const users = (await this.users.list()).users;
+		for (const user of users) {
+			this.users.delete({ userId: user.$id });
 		}
 	}
 }
